@@ -55,7 +55,8 @@ namespace CookBook
                         break;
                     case '5':
                         var removeId = recipeManager.RemoveRecipeView();
-                        recipeManager.RemoveRecipeById(removeId);
+                        var recipeToRemove = recipeManager.GetRecipeById(removeId);
+                        recipeManager.RemoveRecipe(recipeToRemove);
                         break;
                     case '6':
                         var tags = recipeManager.AllTags();
@@ -71,7 +72,10 @@ namespace CookBook
                         var recipes = recipeManager.AllRecipes();
                         recipeManager.ItemsListView(recipes);
                         var editId = recipeManager.EditRecipeView();
-                        recipeManager.EditRecipeById(editId);
+                        var recipeToEdit = recipeManager.GetRecipeById(editId);
+                        recipeManager.RecipeToConsole(recipeToEdit);
+                        var editedRecipe = recipeManager.EditPropertiesMethod(recipeToEdit);
+                        recipeManager.EditRecipe(editedRecipe);
                         break;
                     case '8':
                         recipes = recipeManager.AllRecipes();

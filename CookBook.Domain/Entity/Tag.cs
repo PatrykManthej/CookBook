@@ -12,5 +12,9 @@ namespace CookBook.Domain.Entity
             Id = id;
             Name = name;
         }
+        public Tag()
+        {
+
+        }
     }
 }

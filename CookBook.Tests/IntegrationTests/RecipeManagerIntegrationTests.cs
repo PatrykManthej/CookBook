@@ -148,7 +148,7 @@ Formę do pieczenia smarujemy masłem. Zarówno dno formy jaki i brzegi wykłada
             recipeService.AddItem(recipe);
             var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
             //Act
-            manager.RemoveRecipeById(recipe.Id);
+            //manager.RemoveRecipeById(recipe.Id);
             //Assert
             recipeService.GetItemById(recipe.Id).Should().BeNull();
         }
@@ -171,6 +171,11 @@ Formę do pieczenia smarujemy masłem. Zarówno dno formy jaki i brzegi wykłada
             returnedRecipes.Should().NotBeNull();
             returnedRecipes.Should().BeOfType(typeof(List<Recipe>));
             areEqualLists.Should().BeTrue();
+        }
+        [Fact]
+        public void EditRecipeById_WithProperId_CanEditRecipe()
+        {
+
         }
     }
 }

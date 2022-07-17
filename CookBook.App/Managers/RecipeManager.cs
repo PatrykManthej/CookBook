@@ -32,7 +32,7 @@ namespace CookBook.App.Managers
             var level = AddRecipeDifficultyLevel();
             var numberOfPortions = AddRecipeNumberOfPortions();
             Console.WriteLine("Please add ingredients:");
-            var ingredients = AddIgredients();
+            var ingredients = AddIngredients();
             var description = AddRecipeDescription();
 
             Console.WriteLine("Do you want to add recipe to favourite list? Please enter y/n:");
@@ -73,25 +73,39 @@ namespace CookBook.App.Managers
             return favouriteRecipes;
         }
 
+        public Recipe GetRecipeById(int recipeId)
+        {
+            if (recipeId == 0)
+            {
+                return null;
+            }
+            var recipe = _recipeService.GetItemById(recipeId);
+            if (recipe is null)
+            {
+                Console.WriteLine("Recipe not found");
+                return null;
+            }
+            return recipe;
+        }
+        public List<Recipe> AllRecipes()
+        {
+            var recipes = _recipeService.GetAllItems();
+            return recipes;
+        }
+
         public int RemoveRecipeView()
         {
             Console.WriteLine("Please enter id of recipe you want to remove or enter 'n' to go back:");
             var recipeId = IdHandling();
             return recipeId;
         }
-        public void RemoveRecipeById(int removeId)
+        public void RemoveRecipe(Recipe recipeToRemove)
         {
-            if(removeId == 0)
+            if(recipeToRemove is null)
             {
                 return;
             }
-            var recipe = _recipeService.GetItemById(removeId);
-            if(recipe is null)
-            {
-                Console.WriteLine("Recipe not found");
-                return;
-            }
-            _recipeService.RemoveItem(recipe);
+            _recipeService.RemoveItem(recipeToRemove);
         }
 
         public List<Tag> AllTags()
@@ -139,25 +153,20 @@ namespace CookBook.App.Managers
             var recipeid = IdHandling();
             return recipeid;
         }
-        public void EditRecipeById(int editId)
-
+        public void EditRecipe(Recipe editedRecipe)
         {
-            if (editId == 0 )
+            if (editedRecipe is null)
             {
                 return;
             }
-            var recipe = _recipeService.GetItemById(editId);
-            if(recipe is null)
-            {
-                Console.WriteLine("Recipe not found");
-                return;
-            }
-            RecipeToConsole(recipe);
-            var editedRecipe = EditPropertiesMethod(recipe);
             _recipeService.UpdateItem(editedRecipe);
         }
         public Recipe EditPropertiesMethod(Recipe recipe)
         {
+            if (recipe is null)
+            {
+                return null;
+            }
             var editPropertyDecision = true;
             while (editPropertyDecision == true)
             {
@@ -249,7 +258,7 @@ namespace CookBook.App.Managers
                 switch (decision)
                 {
                     case '1':
-                        var ingredients = AddIgredients();
+                        var ingredients = AddIngredients();
                         recipe.Ingredients.AddRange(ingredients);
                         break;
                     case '2':
@@ -312,12 +321,6 @@ namespace CookBook.App.Managers
                 }
             }
             return recipe;
-        }
-
-        public List<Recipe> AllRecipes()
-        {
-            var recipes = _recipeService.GetAllItems();
-            return recipes;
         }
 
         public int IdHandling()
@@ -460,7 +463,7 @@ namespace CookBook.App.Managers
             var name = _console.ReadLine();
             return name;
         }
-        public List<Ingredient> AddIgredients()
+        public List<Ingredient> AddIngredients()
         {
             List<Ingredient> ingredients = new List<Ingredient>();
             bool addIngredients = true;
