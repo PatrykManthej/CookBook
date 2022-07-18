@@ -14,8 +14,8 @@ namespace CookBook.App.Managers
         private readonly MenuActionService _actionService;
         private IService<Recipe> _recipeService;
         private IService<Tag> _tagService;
-        private IConsole _console
-            ;
+        private IConsole _console;
+            
         public RecipeManager(MenuActionService actionService, IService<Recipe> recipeService, IService<Tag> tagService, IConsole console)
         {
             _actionService = actionService;
@@ -24,7 +24,8 @@ namespace CookBook.App.Managers
             _console = console;
         }
 
-        public int AddNewRecipe()
+        
+        public Recipe AddNewRecipeView()
         {
             var recipeName = AddRecipeName();
             var tags = AddTags();
@@ -52,9 +53,12 @@ namespace CookBook.App.Managers
             {
                 isTodaysDecision = true;
             }
-
             int lastId = _recipeService.GetLastId();
             Recipe recipe = new Recipe(lastId + 1, recipeName, preparationTime, level, numberOfPortions, description, isFavouriteDecision, isTodaysDecision, ingredients, tags);
+            return recipe;
+        }
+        public int AddNewRecipe(Recipe recipe)
+        {
             _recipeService.AddItem(recipe);
             Console.WriteLine();
 

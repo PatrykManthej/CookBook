@@ -3,6 +3,7 @@ using CookBook.App.Concrete;
 using CookBook.App.Managers;
 using CookBook.Domain.Entity;
 using FluentAssertions;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,6 +83,56 @@ Formę do pieczenia smarujemy masłem. Zarówno dno formy jaki i brzegi wykłada
                    },
                    Tags = new List<Tag>(){tags[6], tags[7], tags[8]} }
            };
+
+        [Fact]
+        public void AddNewRecipeView_CanAddRecipe_ReturnsRecipeToAddWithProperId()
+        {
+            //Arrange
+            IService<Recipe> recipeService = new RecipeService();
+            recipeService.Items.AddRange(recipes);
+            var lastId = recipeService.Items.Last().Id;
+            var mockConsole = new Mock<IConsole>();
+            mockConsole.Setup(s => s.ReadKeyChar()).Returns('n');
+            mockConsole.Setup(s => s.ReadLine()).Returns("tag");
+            //Act
+            var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), mockConsole.Object);
+            var recipeToAdd = manager.AddNewRecipeView();
+            //Assert
+            recipeToAdd.Id.Should().Be(lastId + 1);
+            recipeToAdd.Id.Should().BeOfType(typeof(int));
+        }
+        [Fact]
+        public void AddNewRecipe_WithProperRecipe_ReturnsAddedRecipeId()
+        {
+            //Arrange
+            var recipe = new Recipe()
+            {
+                Id = 7,
+                Name = "Roladki z mięsem",
+                PreparationTime = "20 min",
+                DifficultyLevel = DifficultyLevels.Easy,
+                NumberOfPortions = 4,
+                Description = @"Krok 1
+W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. ",
+                IsFavourite = true,
+                IsTodaysRecipe = true,
+                Ingredients = new List<Ingredient>()
+                   {
+                       new Ingredient(){ Id = 1, Name = "zielona cukinia", Amount = "3 sztuki"},
+                       new Ingredient(){ Id = 2, Name = "mozarella", Amount = "100g"}
+                   },
+                Tags = new List<Tag>() { tags[0], tags[1] }
+            };
+            IService<Recipe> recipeService = new RecipeService();
+            //Act
+            var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
+            var id = manager.AddNewRecipe(recipe);
+            //Assert
+            id.Should().Be(recipe.Id);
+            id.Should().BeOfType(typeof(int));
+            recipeService.Items.FirstOrDefault(r => r.Id == id).Should().NotBeNull();
+            recipeService.Items.FirstOrDefault(r => r.Id == id).Should().BeSameAs(recipe);
+        }
         [Fact]
         public void RecipesForTodayList_ReturnsListOfRecipesWhichPropertyIsTodaysRecipeIsTrue()
         {
@@ -95,9 +146,9 @@ Formę do pieczenia smarujemy masłem. Zarówno dno formy jaki i brzegi wykłada
             var recipesForToday = allRecipes.Where(r=>r.IsTodaysRecipe is true).ToList();
             //Act
             var returnedRecipes = manager.RecipesForTodayList();
-            bool areEqualLists = Enumerable.SequenceEqual(recipesForToday, returnedRecipes);
 
             //Assert
+            bool areEqualLists = Enumerable.SequenceEqual(recipesForToday, returnedRecipes);
             returnedRecipes.Should().BeOfType(typeof(List<Recipe>));
             returnedRecipes.Should().NotBeNull();
             areEqualLists.Should().BeTrue();
@@ -115,42 +166,59 @@ Formę do pieczenia smarujemy masłem. Zarówno dno formy jaki i brzegi wykłada
             var favouriteRecipes = allRecipes.Where(r => r.IsFavourite is true).ToList();
             //Act
             var returnedRecipes = manager.FavouriteRecipesList();
-            bool areEqualLists = Enumerable.SequenceEqual(favouriteRecipes, returnedRecipes);
 
             //Assert
+            bool areEqualLists = Enumerable.SequenceEqual(favouriteRecipes, returnedRecipes);
             returnedRecipes.Should().BeOfType(typeof(List<Recipe>));
             returnedRecipes.Should().NotBeNull();
             areEqualLists.Should().BeTrue();
         }
         [Fact]
-        public void RemoveRecipeById_WithProperId_CanDeleteRecipe()
+        public void GetRecipeById_WithProperId_ReturnsRecipe()
         {
             //Arrange
-            Recipe recipe = new Recipe()
-            {
-                Id = 7,
-                Name = "Falafel",
-                PreparationTime = "30 min",
-                DifficultyLevel = DifficultyLevels.Medium,
-                NumberOfPortions = 2,
-                Description = @"Krok 1 W garnku na rozgrzanym tłuszczu podsmaż falafelka.",
-                IsFavourite = true,
-                IsTodaysRecipe = true,
-                Ingredients = new List<Ingredient>()
-                   {
-                       new Ingredient(){ Id = 19, Name = "ciecierzyca", Amount = "400g"},
-                       new Ingredient(){ Id = 20, Name = "czosnek", Amount = "50g"},
-                       new Ingredient(){ Id = 21, Name = "ogórek", Amount = "1 sztuka" }
-                   },
-                Tags = new List<Tag>() { new Tag(10,"pita"), new Tag(11,"izrael") }
-            };
             IService<Recipe> recipeService = new RecipeService();
-            recipeService.AddItem(recipe);
+            IService<Tag> tagService = new TagService();
+            tagService.Items.AddRange(tags);
+            recipeService.Items.AddRange(recipes);
+            var recipeId = 1;
+            var recipe = recipes.FirstOrDefault(r => r.Id == recipeId);
+            var manager = new RecipeManager(new MenuActionService(), recipeService, tagService, new ConsoleWrapper());
+            //Act
+            var returnedRecipe = manager.GetRecipeById(recipeId);
+            //Assert
+            returnedRecipe.Id.Should().Be(recipeId);
+            returnedRecipe.Should().BeSameAs(recipe);
+        }
+        [Fact]
+        public void AllRecipes_ReturnsListOfRecipes()
+        {
+            //Arrange
+            IService<Recipe> recipeService = new RecipeService();
+            recipeService.Items.AddRange(recipes);
+            var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
+
+            //Act
+            var returnedRecipes = manager.AllRecipes();
+
+            //Assert
+            bool areEqualLists = Enumerable.SequenceEqual(recipes, returnedRecipes);
+            returnedRecipes.Should().BeOfType(typeof(List<Recipe>));
+            returnedRecipes.Should().NotBeNull();
+            areEqualLists.Should().BeTrue();
+        }
+        [Fact]
+        public void RemoveRecipe_WithProperRecipe_CanDeleteRecipe()
+        {
+            //Arrange
+            IService<Recipe> recipeService = new RecipeService();
+            recipeService.Items.AddRange(recipes);
+            var recipe = recipes[0];
             var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
             //Act
-            //manager.RemoveRecipeById(recipe.Id);
+            manager.RemoveRecipe(recipe);
             //Assert
-            recipeService.GetItemById(recipe.Id).Should().BeNull();
+            recipeService.Items.FirstOrDefault(r => r.Id == recipe.Id).Should().BeNull();
         }
         [Fact]
         public void RecipesByTagList_WithProperTagName_ReturnsListOfRecipes()
@@ -166,16 +234,56 @@ Formę do pieczenia smarujemy masłem. Zarówno dno formy jaki i brzegi wykłada
             var recipesWithTag = allRecipes.Where(r=>r.Tags.Any(t=>t.Name == tag)).ToList();
             //Act
             var returnedRecipes = manager.RecipesByTagList(tag);
-            bool areEqualLists = Enumerable.SequenceEqual(recipesWithTag, returnedRecipes);
             //Assert
+            bool areEqualLists = Enumerable.SequenceEqual(recipesWithTag, returnedRecipes);
             returnedRecipes.Should().NotBeNull();
             returnedRecipes.Should().BeOfType(typeof(List<Recipe>));
             areEqualLists.Should().BeTrue();
         }
         [Fact]
-        public void EditRecipeById_WithProperId_CanEditRecipe()
+        public void EditRecipe_WithProperRecipe_CanEditRecipe()
         {
+            //Arrange
+            IService<Recipe> recipeService = new RecipeService();
+            recipeService.Items.AddRange(recipes);
+            var recipe = recipes[0];
+            var newRecipeName = "Test";
+            recipe.Name = newRecipeName;
+            var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
+            //Act
+            manager.EditRecipe(recipe);
+            //Assert
+            recipeService.Items.FirstOrDefault(r => r.Id == recipe.Id).Name.Should().Be(newRecipeName);
+        }
+        [Fact]
+        public void RecipesSeed_WithProperListOfRecipes_CanAddListOfRecipes()
+        {
+            //Arrange
+            IService<Recipe> recipeService = new RecipeService();
+            var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
 
+            //Act
+            manager.RecipesSeed(recipes);
+            var seededRecipes = recipeService.Items;
+
+            //Assert
+            bool areEqualLists = Enumerable.SequenceEqual(seededRecipes, recipes);
+            areEqualLists.Should().BeTrue();
+        }
+        [Fact]
+        public void TagsSeed_WithProperListOfTags_CanAddListOfTags()
+        {
+            //Arrange
+            IService<Tag> tagService = new TagService();
+            var manager = new RecipeManager(new MenuActionService(), new RecipeService(), tagService, new ConsoleWrapper());
+
+            //Act
+            manager.TagsSeed(tags);
+            var seededTags = tagService.Items;
+
+            //Assert
+            bool areEqualLists = Enumerable.SequenceEqual(seededTags, tags);
+            areEqualLists.Should().BeTrue();
         }
     }
 }

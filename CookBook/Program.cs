@@ -51,7 +51,8 @@ namespace CookBook
                         recipeManager.RecipeToConsole(recipeToShow);
                         break;
                     case '4':
-                        var createdRecipeId = recipeManager.AddNewRecipe();
+                        var recipeToAdd = recipeManager.AddNewRecipeView();
+                        var createdRecipeId = recipeManager.AddNewRecipe(recipeToAdd);
                         break;
                     case '5':
                         var removeId = recipeManager.RemoveRecipeView();

@@ -85,6 +85,56 @@ Formę do pieczenia smarujemy masłem. Zarówno dno formy jaki i brzegi wykłada
            };
 
         [Fact]
+        public void AddNewRecipeView_CanAddRecipe_ReturnsRecipeToAddWithProperId()
+        {
+            //Arrange
+            var lastId = recipes[recipes.Count-1].Id;
+            var mock = new Mock<IService<Recipe>>();
+            var mockConsole = new Mock<IConsole>();
+            mock.Setup(s=>s.GetLastId()).Returns(lastId);
+            mockConsole.Setup(s => s.ReadKeyChar()).Returns('n');
+            mockConsole.Setup(s => s.ReadLine()).Returns("tag");
+            //Act
+            var manager = new RecipeManager(new MenuActionService(), mock.Object,new TagService(), mockConsole.Object);
+            var recipeToAdd = manager.AddNewRecipeView();
+            //Assert
+            recipeToAdd.Id.Should().Be(lastId + 1);
+            recipeToAdd.Id.Should().BeOfType(typeof(int));
+        }
+        [Fact]
+        public void AddNewRecipe_WithProperRecipe_ReturnsAddedRecipeId()
+        {
+            //Arrange
+            var recipe = new Recipe()
+            {
+                Id = 1,
+                Name = "Roladki z mięsem mielonym i cukinią",
+                PreparationTime = "50 min",
+                DifficultyLevel = DifficultyLevels.Easy,
+                NumberOfPortions = 8,
+                Description = @"Krok 1
+W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują wszystkie soki, dodaj wtedy pomidory z puszki oraz Knorr Naturalnie smaczne - doprawi on sos do smaku oraz sprawi, że sos uzyska odpowiednią gęstość. Wymieszaj i gotuj około 3-4 minuty.",
+                IsFavourite = true,
+                IsTodaysRecipe = true,
+                Ingredients = new List<Ingredient>()
+                   {
+                       new Ingredient(){ Id = 1, Name = "zielona cukinia", Amount = "3 sztuki"},
+                       new Ingredient(){ Id = 2, Name = "mozarella", Amount = "100g"},
+                       new Ingredient(){ Id = 3, Name = "tortilla", Amount = "1 opakowanie" }
+                   },
+                Tags = new List<Tag>() { tags[0], tags[1] }
+            };
+            var mock = new Mock<IService<Recipe>>();
+            mock.Setup(s => s.AddItem(It.IsAny<Recipe>()));
+            //Act
+            var manager = new RecipeManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var id = manager.AddNewRecipe(recipe);
+            //Assert
+            id.Should().Be(recipe.Id);
+            id.Should().BeOfType(typeof(int));
+            mock.Verify(m => m.AddItem(recipe));
+        }
+        [Fact]
         public void RecipesForTodayList_ReturnsListOfRecipesWhichPropertyIsTodaysRecipeIsTrue()
         {
             //Arrange
@@ -290,26 +340,5 @@ Formę do pieczenia smarujemy masłem. Zarówno dno formy jaki i brzegi wykłada
             returnedRecipe.Should().BeOfType(typeof(Recipe));
             returnedRecipe.Should().NotBeNull();
         }
-        [Fact]
-        public void AddNewRecipe_CanAddRecipe_ReturnsAddedRecipeId()
-        {
-            //Arrange
-            var lastId = recipes[recipes.Count-1].Id;
-            var mock = new Mock<IService<Recipe>>();
-            var mockConsole = new Mock<IConsole>();
-            mock.Setup(s => s.AddItem(It.IsAny<Recipe>()));
-            mock.Setup(s=>s.GetLastId()).Returns(lastId);
-            mockConsole.Setup(s => s.ReadKeyChar()).Returns('n');
-            mockConsole.Setup(s => s.ReadLine()).Returns("tag");
-            //Act
-            var manager = new RecipeManager(new MenuActionService(), mock.Object,new TagService(), mockConsole.Object);
-            var id = manager.AddNewRecipe();
-            //Assert
-            id.Should().Be(lastId + 1);
-            id.Should().BeOfType(typeof(int));
-        }
-
-
-
     }
 }
