@@ -93,10 +93,17 @@ namespace CookBook
                     case '9':
                         recipes = recipeGettingManager.AllRecipes();
                         recipeGettingManager.ItemsListView(recipes);
-                        var recipeToJsonId = recipeToFileManager.RecipeToJsonIdView();
-                        var recipeToJson = recipeGettingManager.GetRecipeById(recipeToJsonId);
-                        recipeToFileManager.RecipeToJson(recipeToJson);
+                        var recipeToXmlId = recipeToFileManager.RecipeToXmlIdView();
+                        var recipeToXml = recipeGettingManager.GetRecipeById(recipeToXmlId);
+                        recipeToFileManager.RecipeToXml(recipeToXml);
                         break;
+                    //case '10':
+                    //    recipes = recipeGettingManager.AllRecipes();
+                    //    recipeGettingManager.ItemsListView(recipes);
+                    //    var recipeToJsonId = recipeToFileManager.RecipeToJsonIdView();
+                    //    var recipeToJson = recipeGettingManager.GetRecipeById(recipeToJsonId);
+                    //    recipeToFileManager.RecipeToJson(recipeToJson);
+                    //    break;
                     default:
                         break;
                 }
