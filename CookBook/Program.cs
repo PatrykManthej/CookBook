@@ -12,10 +12,14 @@ namespace CookBook
             RecipeService recipeService = new RecipeService();
             TagService tagService = new TagService();
             ConsoleWrapper consoleWrapper = new ConsoleWrapper();
-            RecipeManager recipeManager = new RecipeManager(actionService,recipeService,tagService, consoleWrapper);
+            TagManager tagManager = new TagManager(tagService, consoleWrapper);
+            RecipeGettingManager recipeGettingManager = new RecipeGettingManager(recipeService, consoleWrapper);
+            RecipeAddingManager recipeAddingManager = new RecipeAddingManager(recipeService, consoleWrapper, tagManager);
+            RecipeEditingManager recipeEditingManager = new RecipeEditingManager(recipeService, consoleWrapper, tagManager);
             
             Console.WriteLine("Welcome to Cookbook app!");
-            RecipesSeed.Seed(recipeManager);
+            RecipesSeed.Seed(recipeAddingManager);
+            TagsSeed.Seed(tagManager);
             while (true)
             {
                 Console.WriteLine("Please let me know what you want to do:");
@@ -29,65 +33,64 @@ namespace CookBook
                 switch (operation.KeyChar)
                 {
                     case '1':
-                        var todaysRecipes = recipeManager.RecipesForTodayList();
-                        recipeManager.ItemsListView(todaysRecipes);
-                        var recipeToShowId = recipeManager.RecipeToShowIdView();
-                        var recipeToShow = recipeManager.RecipeDetailsView(todaysRecipes, recipeToShowId);
-                        recipeManager.RecipeToConsole(recipeToShow);
+                        var todaysRecipes = recipeGettingManager.RecipesForTodayList();
+                        recipeGettingManager.ItemsListView(todaysRecipes);
+                        var recipeToShowId = recipeGettingManager.RecipeToShowIdView();
+                        var recipeToShow = recipeGettingManager.RecipeDetailsView(todaysRecipes, recipeToShowId);
+                        recipeGettingManager.RecipeToConsole(recipeToShow);
                         break;
                     case '2':
-                        var tag = recipeManager.RecipesByTagNameView();
-                        var recipesToShow = recipeManager.RecipesByTagList(tag);
-                        recipeManager.ItemsListView(recipesToShow);
-                        recipeToShowId = recipeManager.RecipeToShowIdView();
-                        recipeToShow = recipeManager.RecipeDetailsView(recipesToShow, recipeToShowId);
-                        recipeManager.RecipeToConsole(recipeToShow);
+                        var tag = tagManager.RecipesByTagNameView();
+                        var recipesToShow = recipeGettingManager.RecipesByTagList(tag);
+                        recipeGettingManager.ItemsListView(recipesToShow);
+                        recipeToShowId = recipeGettingManager.RecipeToShowIdView();
+                        recipeToShow = recipeGettingManager.RecipeDetailsView(recipesToShow, recipeToShowId);
+                        recipeGettingManager.RecipeToConsole(recipeToShow);
                         break;
                     case '3':
-                        var favouriteRecipes = recipeManager.FavouriteRecipesList();
-                        recipeManager.ItemsListView(favouriteRecipes);
-                        recipeToShowId = recipeManager.RecipeToShowIdView();
-                        recipeToShow = recipeManager.RecipeDetailsView(favouriteRecipes, recipeToShowId);
-                        recipeManager.RecipeToConsole(recipeToShow);
+                        var favouriteRecipes = recipeGettingManager.FavouriteRecipesList();
+                        recipeGettingManager.ItemsListView(favouriteRecipes);
+                        recipeToShowId = recipeGettingManager.RecipeToShowIdView();
+                        recipeToShow = recipeGettingManager.RecipeDetailsView(favouriteRecipes, recipeToShowId);
+                        recipeGettingManager.RecipeToConsole(recipeToShow);
                         break;
                     case '4':
-                        var recipeToAdd = recipeManager.AddNewRecipeView();
-                        var createdRecipeId = recipeManager.AddNewRecipe(recipeToAdd);
+                        var recipeToAdd = recipeAddingManager.AddNewRecipeView();
+                        var createdRecipeId = recipeAddingManager.AddNewRecipe(recipeToAdd);
                         break;
                     case '5':
-                        var removeId = recipeManager.RemoveRecipeView();
-                        var recipeToRemove = recipeManager.GetRecipeById(removeId);
-                        recipeManager.RemoveRecipe(recipeToRemove);
+                        var removeId = recipeEditingManager.RemoveRecipeView();
+                        var recipeToRemove = recipeGettingManager.GetRecipeById(removeId);
+                        recipeEditingManager.RemoveRecipe(recipeToRemove);
                         break;
                     case '6':
-                        var tags = recipeManager.AllTags();
-                        recipeManager.ItemsListView(tags);
-                        var tagName = recipeManager.RecipesByTagIdView(tags);
-                        var recipesByTagList = recipeManager.RecipesByTagList(tagName);
-                        recipeManager.ItemsListView(recipesByTagList);
-                        recipeToShowId = recipeManager.RecipeToShowIdView();
-                        recipeToShow = recipeManager.RecipeDetailsView(recipesByTagList, recipeToShowId);
-                        recipeManager.RecipeToConsole(recipeToShow);
+                        var tags = tagManager.AllTags();
+                        recipeGettingManager.ItemsListView(tags);
+                        var tagName = tagManager.RecipesByTagIdView(tags);
+                        var recipesByTagList = recipeGettingManager.RecipesByTagList(tagName);
+                        recipeGettingManager.ItemsListView(recipesByTagList);
+                        recipeToShowId = recipeGettingManager.RecipeToShowIdView();
+                        recipeToShow = recipeGettingManager.RecipeDetailsView(recipesByTagList, recipeToShowId);
+                        recipeGettingManager.RecipeToConsole(recipeToShow);
                         break;
                     case '7':
-                        var recipes = recipeManager.AllRecipes();
-                        recipeManager.ItemsListView(recipes);
-                        var editId = recipeManager.EditRecipeView();
-                        var recipeToEdit = recipeManager.GetRecipeById(editId);
-                        recipeManager.RecipeToConsole(recipeToEdit);
-                        var editedRecipe = recipeManager.EditPropertiesMethod(recipeToEdit);
-                        recipeManager.EditRecipe(editedRecipe);
+                        var recipes = recipeGettingManager.AllRecipes();
+                        recipeGettingManager.ItemsListView(recipes);
+                        var editId = recipeEditingManager.EditRecipeView();
+                        var recipeToEdit = recipeGettingManager.GetRecipeById(editId);
+                        recipeGettingManager.RecipeToConsole(recipeToEdit);
+                        var editedRecipe = recipeEditingManager.EditRecipeProperties(recipeToEdit);
+                        recipeEditingManager.EditRecipe(editedRecipe);
                         break;
                     case '8':
-                        recipes = recipeManager.AllRecipes();
-                        recipeManager.ItemsListView(recipes);
-                        recipeToShowId = recipeManager.RecipeToShowIdView();
-                        recipeToShow = recipeManager.RecipeDetailsView(recipes, recipeToShowId);
-                        recipeManager.RecipeToConsole(recipeToShow);
+                        recipes = recipeGettingManager.AllRecipes();
+                        recipeGettingManager.ItemsListView(recipes);
+                        recipeToShowId = recipeGettingManager.RecipeToShowIdView();
+                        recipeToShow = recipeGettingManager.RecipeDetailsView(recipes, recipeToShowId);
+                        recipeGettingManager.RecipeToConsole(recipeToShow);
                         break;
                     default:
                         break;
-
                 }
             }
         }

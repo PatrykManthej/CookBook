@@ -95,7 +95,7 @@ Formę do pieczenia smarujemy masłem. Zarówno dno formy jaki i brzegi wykłada
             mockConsole.Setup(s => s.ReadKeyChar()).Returns('n');
             mockConsole.Setup(s => s.ReadLine()).Returns("tag");
             //Act
-            var manager = new RecipeManager(new MenuActionService(), mock.Object,new TagService(), mockConsole.Object);
+            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object,new TagService(), mockConsole.Object);
             var recipeToAdd = manager.AddNewRecipeView();
             //Assert
             recipeToAdd.Id.Should().Be(lastId + 1);
@@ -127,7 +127,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             var mock = new Mock<IService<Recipe>>();
             mock.Setup(s => s.AddItem(It.IsAny<Recipe>()));
             //Act
-            var manager = new RecipeManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
             var id = manager.AddNewRecipe(recipe);
             //Assert
             id.Should().Be(recipe.Id);
@@ -140,7 +140,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             //Arrange
             var mock = new Mock<IService<Recipe>>();
             mock.Setup(s => s.GetAllItems()).Returns(recipes);
-            var manager = new RecipeManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
 
             //Act
             var returnedRecipes = manager.RecipesForTodayList();
@@ -157,7 +157,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             //Arrange
             var mock = new Mock<IService<Recipe>>();
             mock.Setup(s => s.GetAllItems()).Returns(recipes);
-            var manager = new RecipeManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
 
             //Act
             var returnedRecipes = manager.FavouriteRecipesList();
@@ -175,7 +175,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             var recipe = recipes[0];
             var mock = new Mock<IService<Recipe>>();
             mock.Setup(s=>s.GetItemById(1)).Returns(recipe);
-            var manager = new RecipeManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
             //Act
             var returnedRecipe = manager.GetRecipeById(1);
             //Assert
@@ -187,7 +187,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             //Arrange
             var mock = new Mock<IService<Recipe>>();
             mock.Setup(s => s.GetAllItems()).Returns(recipes);
-            var manager = new RecipeManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
 
             //Act
             var returnedRecipes = manager.AllRecipes();
@@ -204,7 +204,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             var recipe = recipes[0];
             var mock = new Mock<IService<Recipe>>();
             mock.Setup(s => s.RemoveItem(recipe));
-            var manager = new RecipeManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
             //Act
             manager.RemoveRecipe(recipe);
             //Assert
@@ -217,7 +217,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             var tag = "obiad";
             var mock = new Mock<IService<Recipe>>();
             mock.Setup(s => s.GetAllItems()).Returns(recipes);
-            var manager = new RecipeManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
             //Act
             var returnedRecipes = manager.RecipesByTagList(tag);
             var recipesWithoutConcreteTag = returnedRecipes.Where(r => r.Tags.TrueForAll(t => t.Name != "obiad"));
@@ -233,7 +233,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             var recipe = recipes[0];
             var mock = new Mock<IService<Recipe>>();
             mock.Setup(s=>s.UpdateItem(recipe));
-            var manager = new RecipeManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
             //Act
             manager.EditRecipe(recipe);
             //Assert
@@ -251,7 +251,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
                 .Returns(propertyNumber)
                 .Returns(newRecipeName)
                 .Returns("n");
-            var manager = new RecipeManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
+            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
             //Act
             var editedRecipe = manager.EditPropertiesMethod(recipe);
             //Asser
@@ -272,7 +272,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             mockConsole.SetupSequence(s => s.ReadLine())
                 .Returns(newIngredient.Name)
                 .Returns(newIngredient.Amount);
-            var manager = new RecipeManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
+            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
             //Act
             var editedRecipe = manager.EditIngredientsMethod(recipe);
             //Asser
@@ -293,7 +293,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
                .Returns('n');
             mockConsole.SetupSequence(s => s.ReadLine())
                 .Returns(newTag.Name);
-            var manager = new RecipeManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
+            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
             //Act
             var editedRecipe = manager.EditTagsMethod(recipe);
             //Asser
@@ -306,7 +306,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             int enteredId = 5;
             var mockConsole = new Mock<IConsole>();
             mockConsole.Setup(s => s.ReadLine()).Returns(enteredId.ToString());
-            var manager = new RecipeManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
+            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
             //Act
             var id = manager.IdHandling();
             //Assert
@@ -320,7 +320,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             string enteredString = "n";
             var mockConsole = new Mock<IConsole>();
             mockConsole.Setup(s => s.ReadLine()).Returns(enteredString);
-            var manager = new RecipeManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
+            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
             //Act
             var id = manager.IdHandling();
             //Assert
@@ -332,7 +332,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
         {
             //Arrange
             int id = 1;
-            var manager = new RecipeManager(new MenuActionService(), new RecipeService(), new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), new TagService(), new ConsoleWrapper());
             //Act
             var returnedRecipe = manager.RecipeDetailsView(recipes, id);
             //Assert

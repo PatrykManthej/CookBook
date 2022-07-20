@@ -95,7 +95,7 @@ Formę do pieczenia smarujemy masłem. Zarówno dno formy jaki i brzegi wykłada
             mockConsole.Setup(s => s.ReadKeyChar()).Returns('n');
             mockConsole.Setup(s => s.ReadLine()).Returns("tag");
             //Act
-            var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), mockConsole.Object);
+            var manager = new RecipeGettingManager(new MenuActionService(), recipeService, new TagService(), mockConsole.Object);
             var recipeToAdd = manager.AddNewRecipeView();
             //Assert
             recipeToAdd.Id.Should().Be(lastId + 1);
@@ -125,7 +125,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. ",
             };
             IService<Recipe> recipeService = new RecipeService();
             //Act
-            var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
             var id = manager.AddNewRecipe(recipe);
             //Assert
             id.Should().Be(recipe.Id);
@@ -141,7 +141,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. ",
             IService<Tag> tagService = new TagService();
             tagService.Items.AddRange(tags);
             recipeService.Items.AddRange(recipes);
-            var manager = new RecipeManager(new MenuActionService(), recipeService, tagService, new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), recipeService, tagService, new ConsoleWrapper());
             var allRecipes = recipeService.GetAllItems();
             var recipesForToday = allRecipes.Where(r=>r.IsTodaysRecipe is true).ToList();
             //Act
@@ -161,7 +161,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. ",
             IService<Tag> tagService = new TagService();
             tagService.Items.AddRange(tags);
             recipeService.Items.AddRange(recipes);
-            var manager = new RecipeManager(new MenuActionService(), recipeService, tagService, new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), recipeService, tagService, new ConsoleWrapper());
             var allRecipes = recipeService.GetAllItems();
             var favouriteRecipes = allRecipes.Where(r => r.IsFavourite is true).ToList();
             //Act
@@ -183,7 +183,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. ",
             recipeService.Items.AddRange(recipes);
             var recipeId = 1;
             var recipe = recipes.FirstOrDefault(r => r.Id == recipeId);
-            var manager = new RecipeManager(new MenuActionService(), recipeService, tagService, new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), recipeService, tagService, new ConsoleWrapper());
             //Act
             var returnedRecipe = manager.GetRecipeById(recipeId);
             //Assert
@@ -196,7 +196,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. ",
             //Arrange
             IService<Recipe> recipeService = new RecipeService();
             recipeService.Items.AddRange(recipes);
-            var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
 
             //Act
             var returnedRecipes = manager.AllRecipes();
@@ -214,7 +214,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. ",
             IService<Recipe> recipeService = new RecipeService();
             recipeService.Items.AddRange(recipes);
             var recipe = recipes[0];
-            var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
             //Act
             manager.RemoveRecipe(recipe);
             //Assert
@@ -229,7 +229,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. ",
             tagService.Items.AddRange(tags);
             recipeService.Items.AddRange(recipes);
             var tag = "obiad";
-            var manager = new RecipeManager(new MenuActionService(), recipeService,tagService, new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), recipeService,tagService, new ConsoleWrapper());
             var allRecipes = recipeService.GetAllItems();
             var recipesWithTag = allRecipes.Where(r=>r.Tags.Any(t=>t.Name == tag)).ToList();
             //Act
@@ -249,7 +249,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. ",
             var recipe = recipes[0];
             var newRecipeName = "Test";
             recipe.Name = newRecipeName;
-            var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
             //Act
             manager.EditRecipe(recipe);
             //Assert
@@ -260,7 +260,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. ",
         {
             //Arrange
             IService<Recipe> recipeService = new RecipeService();
-            var manager = new RecipeManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), recipeService, new TagService(), new ConsoleWrapper());
 
             //Act
             manager.RecipesSeed(recipes);
@@ -275,7 +275,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. ",
         {
             //Arrange
             IService<Tag> tagService = new TagService();
-            var manager = new RecipeManager(new MenuActionService(), new RecipeService(), tagService, new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), tagService, new ConsoleWrapper());
 
             //Act
             manager.TagsSeed(tags);
