@@ -89,6 +89,8 @@ namespace CookBook
                         recipeToShow = recipeGettingManager.RecipeDetailsView(recipes, recipeToShowId);
                         recipeGettingManager.RecipeToConsole(recipeToShow);
                         break;
+                    case '9':
+                        
                     default:
                         break;
                 }

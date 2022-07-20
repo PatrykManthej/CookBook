@@ -2,8 +2,10 @@
 using CookBook.App.Concrete;
 using CookBook.Domain.Common;
 using CookBook.Domain.Entity;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -127,6 +129,19 @@ namespace CookBook.App.Managers
                 Console.Write($"\"{tag.Name}\", ");
             }
             Console.WriteLine();
+        }
+
+        public void RecipeToJson(Recipe recipe)
+        {
+            using StreamWriter sw = new StreamWriter(@"..\..\..\Jsons\RecipeToJson.json");
+            using JsonWriter writer = new JsonTextWriter(sw);
+
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.Serialize(writer, recipe);
+        }
+        public void RecipeToXML(Recipe recipe)
+        {
+
         }
 
 
