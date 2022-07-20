@@ -1,9 +1,11 @@
 ﻿using CookBook.App.Abstract;
+using CookBook.App.Concrete;
 using CookBook.Domain.Entity;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -11,8 +13,37 @@ namespace CookBook.App.Managers
 {
     public class RecipeToFileManager : BaseManager
     {
-        public RecipeToFileManager(IConsole console) : base(console)
+        private MenuActionService _menuActionService;
+        public RecipeToFileManager(IConsole console, MenuActionService menuActionService) : base(console)
         {
+            _menuActionService = menuActionService;
+        }
+
+        public void RecipeToFile()
+        {
+            var recipeToFileMenu = _menuActionService.GetMenuActionsByMenuName("SaveToFileMenu");
+
+            Console.WriteLine("Please select file format:");
+            for (int i = 0; i < recipeToFileMenu.Count; i++)
+            {
+                Console.WriteLine($"{recipeToFileMenu[i].Id}. {recipeToFileMenu[i].Name}");
+            }
+            var fileFormatId = IdHandling();
+            var fileFormat = recipeToFileMenu.FirstOrDefault(f => f.Id == fileFormatId);
+            if (fileFormat is null)
+            {
+                Console.WriteLine("Action not found");
+                return;
+            }
+            switch (fileFormatId)
+            {
+                case '1':
+                    var recipeId = RecipeToJsonIdView();
+                    RecipeToJson()
+                    break;
+                default:
+                    break;
+            }
         }
         public int RecipeToJsonIdView()
         {

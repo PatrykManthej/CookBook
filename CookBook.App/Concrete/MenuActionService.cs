@@ -36,7 +36,10 @@ namespace CookBook.App.Concrete
             AddItem(new MenuAction(6, "Tags", "Main"));
             AddItem(new MenuAction(7, "Edit recipe", "Main"));
             AddItem(new MenuAction(8, "All recipes", "Main"));
-            AddItem(new MenuAction(9, "Recipe to Json", "Main"));
+            AddItem(new MenuAction(9, "Save recipe to file", "Main"));
+
+            AddItem(new MenuAction(1, "Save as Json", "SaveToFileMenu"));
+            AddItem(new MenuAction(2, "Save as Xml", "SaveToFileMenu"));
         }
     }
 }
