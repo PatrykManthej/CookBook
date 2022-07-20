@@ -12,7 +12,7 @@ namespace CookBook
     {
         public static void Seed(TagManager tagManager)
         {
-            string tagsJsonFile = File.ReadAllText(@"..\..\..\Jsons\TagsSeed.json");
+            string tagsJsonFile = File.ReadAllText(@"..\..\..\Jsons\Seeders\TagsSeed.json");
 
             var tagsFromJson = JsonConvert.DeserializeObject<List<Tag>>(tagsJsonFile);
 

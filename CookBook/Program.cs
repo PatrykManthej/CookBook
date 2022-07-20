@@ -90,7 +90,12 @@ namespace CookBook
                         recipeGettingManager.RecipeToConsole(recipeToShow);
                         break;
                     case '9':
-                        
+                        recipes = recipeGettingManager.AllRecipes();
+                        recipeGettingManager.ItemsListView(recipes);
+                        var recipeToJsonId = recipeGettingManager.RecipeToJsonIdView();
+                        var recipeToJson = recipeGettingManager.GetRecipeById(recipeToJsonId);
+                        recipeGettingManager.RecipeToJson(recipeToJson);
+                        break;
                     default:
                         break;
                 }

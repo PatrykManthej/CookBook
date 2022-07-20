@@ -12,7 +12,7 @@ namespace CookBook
     {
         public static void Seed(RecipeAddingManager recipeAddingManager)
         {
-            string recipesJsonFile = File.ReadAllText(@"..\..\..\Jsons\RecipesSeed.json");
+            string recipesJsonFile = File.ReadAllText(@"..\..\..\Jsons\Seeders\RecipesSeed.json");
 
             var recipesFromJson = JsonConvert.DeserializeObject<List<Recipe>>(recipesJsonFile);
 
