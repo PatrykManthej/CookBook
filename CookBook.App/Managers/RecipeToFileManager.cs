@@ -25,20 +25,22 @@ namespace CookBook.App.Managers
             {
                 return 0;
             }
-            var recipeToFileMenu = _menuActionService.GetMenuActionsByMenuName("SaveToFileMenu");
 
+            var recipeToFileMenu = _menuActionService.GetMenuActionsByMenuName("SaveToFileMenu");
             Console.WriteLine("Please select file format:");
             for (int i = 0; i < recipeToFileMenu.Count; i++)
             {
                 Console.WriteLine($"{recipeToFileMenu[i].Id}. {recipeToFileMenu[i].Name}");
             }
             var fileFormatId = IdHandling();
+
             var fileFormat = recipeToFileMenu.FirstOrDefault(f => f.Id == fileFormatId);
             if (fileFormat is null)
             {
                 Console.WriteLine("Action not found");
                 return 0;
             }
+
             return fileFormatId;
         }
         public void FileFormatSelection(Recipe recipe, int fileFormatId)
