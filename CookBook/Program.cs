@@ -16,7 +16,7 @@ namespace CookBook
             RecipeGettingManager recipeGettingManager = new RecipeGettingManager(recipeService, consoleWrapper);
             RecipeAddingManager recipeAddingManager = new RecipeAddingManager(recipeService, consoleWrapper, tagManager);
             RecipeEditingManager recipeEditingManager = new RecipeEditingManager(recipeService, consoleWrapper, tagManager);
-            RecipeToFileManager recipeToFileManager = new RecipeToFileManager(consoleWrapper);
+            RecipeToFileManager recipeToFileManager = new RecipeToFileManager(consoleWrapper, actionService);
             
             Console.WriteLine("Welcome to Cookbook app!");
             RecipesSeed.Seed(recipeAddingManager);
@@ -93,17 +93,10 @@ namespace CookBook
                     case '9':
                         recipes = recipeGettingManager.AllRecipes();
                         recipeGettingManager.ItemsListView(recipes);
-                        var recipeToXmlId = recipeToFileManager.RecipeToXmlIdView();
-                        var recipeToXml = recipeGettingManager.GetRecipeById(recipeToXmlId);
-                        recipeToFileManager.RecipeToXml(recipeToXml);
+                        var recipeToFileId = recipeToFileManager.RecipeToFileIdView();
+                        var recipeToFile = recipeGettingManager.GetRecipeById(recipeToFileId);
+                        recipeToFileManager.RecipeToFile(recipeToFile);
                         break;
-                    //case '10':
-                    //    recipes = recipeGettingManager.AllRecipes();
-                    //    recipeGettingManager.ItemsListView(recipes);
-                    //    var recipeToJsonId = recipeToFileManager.RecipeToJsonIdView();
-                    //    var recipeToJson = recipeGettingManager.GetRecipeById(recipeToJsonId);
-                    //    recipeToFileManager.RecipeToJson(recipeToJson);
-                    //    break;
                     default:
                         break;
                 }

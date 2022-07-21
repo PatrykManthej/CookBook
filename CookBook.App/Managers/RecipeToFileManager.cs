@@ -19,7 +19,7 @@ namespace CookBook.App.Managers
             _menuActionService = menuActionService;
         }
 
-        public void RecipeToFile()
+        public void RecipeToFile(Recipe recipe)
         {
             var recipeToFileMenu = _menuActionService.GetMenuActionsByMenuName("SaveToFileMenu");
 
@@ -37,23 +37,19 @@ namespace CookBook.App.Managers
             }
             switch (fileFormatId)
             {
-                case '1':
-                    var recipeId = RecipeToJsonIdView();
-                    RecipeToJson()
+                case 1:
+                    RecipeToJson(recipe);
+                    break;
+                case 2:
+                    RecipeToXml(recipe);
                     break;
                 default:
                     break;
             }
         }
-        public int RecipeToJsonIdView()
+        public int RecipeToFileIdView()
         {
-            Console.WriteLine("Please enter recipe id which you want to save as json file or enter 'n' to go back:");
-            var recipeId = IdHandling();
-            return recipeId;
-        }
-        public int RecipeToXmlIdView()
-        {
-            Console.WriteLine("Please enter recipe id which you want to save as xml file or enter 'n' to go back:");
+            Console.WriteLine("Please enter recipe id which you want to save as file or enter 'n' to go back:");
             var recipeId = IdHandling();
             return recipeId;
         }
