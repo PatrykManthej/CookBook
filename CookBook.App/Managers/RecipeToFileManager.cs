@@ -19,8 +19,12 @@ namespace CookBook.App.Managers
             _menuActionService = menuActionService;
         }
 
-        public void RecipeToFile(Recipe recipe)
+        public int RecipeToFileView(Recipe recipe)
         {
+            if(recipe is null)
+            {
+                return 0;
+            }
             var recipeToFileMenu = _menuActionService.GetMenuActionsByMenuName("SaveToFileMenu");
 
             Console.WriteLine("Please select file format:");
@@ -33,6 +37,14 @@ namespace CookBook.App.Managers
             if (fileFormat is null)
             {
                 Console.WriteLine("Action not found");
+                return 0;
+            }
+            return fileFormatId;
+        }
+        public void FileFormatSelection(Recipe recipe, int fileFormatId)
+        {
+            if(recipe is null)
+            {
                 return;
             }
             switch (fileFormatId)

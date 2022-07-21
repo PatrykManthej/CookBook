@@ -95,7 +95,8 @@ namespace CookBook
                         recipeGettingManager.ItemsListView(recipes);
                         var recipeToFileId = recipeToFileManager.RecipeToFileIdView();
                         var recipeToFile = recipeGettingManager.GetRecipeById(recipeToFileId);
-                        recipeToFileManager.RecipeToFile(recipeToFile);
+                        var fileFormatId = recipeToFileManager.RecipeToFileView(recipeToFile);
+                        recipeToFileManager.FileFormatSelection(recipeToFile, fileFormatId);
                         break;
                     default:
                         break;
