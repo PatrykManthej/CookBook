@@ -6,13 +6,13 @@ using FluentAssertions;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
-using System.Linq;
 
 namespace CookBook.Tests.UnitTests
 {
-    public class RecipeManagerUnitTests
+    public class RecipeGettingManagerUnitTests
     {
         private static List<Tag> tags = new List<Tag>()
             {
@@ -85,66 +85,16 @@ Formę do pieczenia smarujemy masłem. Zarówno dno formy jaki i brzegi wykłada
            };
 
         [Fact]
-        public void AddNewRecipeView_CanAddRecipe_ReturnsRecipeToAddWithProperId()
-        {
-            //Arrange
-            var lastId = recipes[recipes.Count-1].Id;
-            var mock = new Mock<IService<Recipe>>();
-            var mockConsole = new Mock<IConsole>();
-            mock.Setup(s=>s.GetLastId()).Returns(lastId);
-            mockConsole.Setup(s => s.ReadKeyChar()).Returns('n');
-            mockConsole.Setup(s => s.ReadLine()).Returns("tag");
-            //Act
-            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object,new TagService(), mockConsole.Object);
-            var recipeToAdd = manager.AddNewRecipeView();
-            //Assert
-            recipeToAdd.Id.Should().Be(lastId + 1);
-            recipeToAdd.Id.Should().BeOfType(typeof(int));
-        }
-        [Fact]
-        public void AddNewRecipe_WithProperRecipe_ReturnsAddedRecipeId()
-        {
-            //Arrange
-            var recipe = new Recipe()
-            {
-                Id = 1,
-                Name = "Roladki z mięsem mielonym i cukinią",
-                PreparationTime = "50 min",
-                DifficultyLevel = DifficultyLevels.Easy,
-                NumberOfPortions = 8,
-                Description = @"Krok 1
-W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują wszystkie soki, dodaj wtedy pomidory z puszki oraz Knorr Naturalnie smaczne - doprawi on sos do smaku oraz sprawi, że sos uzyska odpowiednią gęstość. Wymieszaj i gotuj około 3-4 minuty.",
-                IsFavourite = true,
-                IsTodaysRecipe = true,
-                Ingredients = new List<Ingredient>()
-                   {
-                       new Ingredient(){ Id = 1, Name = "zielona cukinia", Amount = "3 sztuki"},
-                       new Ingredient(){ Id = 2, Name = "mozarella", Amount = "100g"},
-                       new Ingredient(){ Id = 3, Name = "tortilla", Amount = "1 opakowanie" }
-                   },
-                Tags = new List<Tag>() { tags[0], tags[1] }
-            };
-            var mock = new Mock<IService<Recipe>>();
-            mock.Setup(s => s.AddItem(It.IsAny<Recipe>()));
-            //Act
-            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
-            var id = manager.AddNewRecipe(recipe);
-            //Assert
-            id.Should().Be(recipe.Id);
-            id.Should().BeOfType(typeof(int));
-            mock.Verify(m => m.AddItem(recipe));
-        }
-        [Fact]
         public void RecipesForTodayList_ReturnsListOfRecipesWhichPropertyIsTodaysRecipeIsTrue()
         {
             //Arrange
             var mock = new Mock<IService<Recipe>>();
             mock.Setup(s => s.GetAllItems()).Returns(recipes);
-            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(mock.Object, new ConsoleWrapper());
 
             //Act
             var returnedRecipes = manager.RecipesForTodayList();
-            var recipeWhichPropertyIsTodaysRecipeIsFalse = returnedRecipes.FirstOrDefault(r=>r.IsTodaysRecipe is false);
+            var recipeWhichPropertyIsTodaysRecipeIsFalse = returnedRecipes.FirstOrDefault(r => r.IsTodaysRecipe is false);
 
             //Assert
             returnedRecipes.Should().BeOfType(typeof(List<Recipe>));
@@ -157,7 +107,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             //Arrange
             var mock = new Mock<IService<Recipe>>();
             mock.Setup(s => s.GetAllItems()).Returns(recipes);
-            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(mock.Object, new ConsoleWrapper());
 
             //Act
             var returnedRecipes = manager.FavouriteRecipesList();
@@ -174,8 +124,8 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             //Arrange
             var recipe = recipes[0];
             var mock = new Mock<IService<Recipe>>();
-            mock.Setup(s=>s.GetItemById(1)).Returns(recipe);
-            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            mock.Setup(s => s.GetItemById(1)).Returns(recipe);
+            var manager = new RecipeGettingManager(mock.Object, new ConsoleWrapper());
             //Act
             var returnedRecipe = manager.GetRecipeById(1);
             //Assert
@@ -187,7 +137,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             //Arrange
             var mock = new Mock<IService<Recipe>>();
             mock.Setup(s => s.GetAllItems()).Returns(recipes);
-            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(mock.Object, new ConsoleWrapper());
 
             //Act
             var returnedRecipes = manager.AllRecipes();
@@ -197,19 +147,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             returnedRecipes.Should().NotBeNull();
             returnedRecipes.Should().BeSameAs(recipes);
         }
-        [Fact]
-        public void RemoveRecipe_WithProperRecipe_CanDeleteRecipe()
-        {
-            //Arrange
-            var recipe = recipes[0];
-            var mock = new Mock<IService<Recipe>>();
-            mock.Setup(s => s.RemoveItem(recipe));
-            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
-            //Act
-            manager.RemoveRecipe(recipe);
-            //Assert
-            mock.Verify(m => m.RemoveItem(recipe));
-        }
+
         [Fact]
         public void RecipesByTagList_WithProperTagName_ReturnsListOfRecipes()
         {
@@ -217,7 +155,7 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             var tag = "obiad";
             var mock = new Mock<IService<Recipe>>();
             mock.Setup(s => s.GetAllItems()).Returns(recipes);
-            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(mock.Object, new ConsoleWrapper());
             //Act
             var returnedRecipes = manager.RecipesByTagList(tag);
             var recipesWithoutConcreteTag = returnedRecipes.Where(r => r.Tags.TrueForAll(t => t.Name != "obiad"));
@@ -227,116 +165,15 @@ W garnku na rozgrzanym tłuszczu podsmaż mielone mięso. Smaż aż odparują ws
             recipesWithoutConcreteTag.Should().BeEmpty();
         }
         [Fact]
-        public void EditRecipe_WithProperRecipe_CanEditRecipe()
-        {
-            //Arrange
-            var recipe = recipes[0];
-            var mock = new Mock<IService<Recipe>>();
-            mock.Setup(s=>s.UpdateItem(recipe));
-            var manager = new RecipeGettingManager(new MenuActionService(), mock.Object, new TagService(), new ConsoleWrapper());
-            //Act
-            manager.EditRecipe(recipe);
-            //Assert
-            mock.Verify(m=>m.UpdateItem(recipe));
-        }
-        [Fact]
-        public void EditPropertiesMethod_WithProperRecipeAndSelectedSpecificProperty_ReturnsModifiedRecipe()
-        {
-            //Arrange
-            var propertyNumber = "2";
-            var newRecipeName = "TestName";
-            var recipe = recipes[0];
-            var mockConsole = new Mock<IConsole>();
-            mockConsole.SetupSequence(s=>s.ReadLine())
-                .Returns(propertyNumber)
-                .Returns(newRecipeName)
-                .Returns("n");
-            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
-            //Act
-            var editedRecipe = manager.EditPropertiesMethod(recipe);
-            //Asser
-            editedRecipe.Name.Should().Be(newRecipeName);
-        }
-        [Fact]
-        public void EditIngredientsMethod_WithProperRecipeAndSpecificOperation_ReturnsRecipeWithModifiedIngredients()
-        {
-            //Arrange
-            var operationNumber = '1';
-            var newIngredient = new Ingredient("test", "100g");
-            var recipe = recipes[0];
-            var mockConsole = new Mock<IConsole>();
-            mockConsole.SetupSequence(s => s.ReadKeyChar())
-               .Returns(operationNumber)
-               .Returns('n')
-               .Returns('n');
-            mockConsole.SetupSequence(s => s.ReadLine())
-                .Returns(newIngredient.Name)
-                .Returns(newIngredient.Amount);
-            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
-            //Act
-            var editedRecipe = manager.EditIngredientsMethod(recipe);
-            //Asser
-            editedRecipe.Ingredients.Last().Name.Should().Be(newIngredient.Name);
-            editedRecipe.Ingredients.Last().Amount.Should().Be(newIngredient.Amount);
-        }
-        [Fact]
-        public void EditTagsMethod_WithProperRecipeAndSpecificOperation_ReturnsRecipeWithModifiedTags()
-        {
-            //Arrange
-            var operationNumber = '1';
-            var newTag = new Tag() { Name = "testtag"};
-            var recipe = recipes[0];
-            var mockConsole = new Mock<IConsole>();
-            mockConsole.SetupSequence(s => s.ReadKeyChar())
-               .Returns(operationNumber)
-               .Returns('n')
-               .Returns('n');
-            mockConsole.SetupSequence(s => s.ReadLine())
-                .Returns(newTag.Name);
-            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
-            //Act
-            var editedRecipe = manager.EditTagsMethod(recipe);
-            //Asser
-            editedRecipe.Tags.Last().Name.Should().Be(newTag.Name);
-        }
-        [Fact]
-        public void IdHandling_WithProperId_ReturnsValidParsedId()
-        {
-            //Arrange
-            int enteredId = 5;
-            var mockConsole = new Mock<IConsole>();
-            mockConsole.Setup(s => s.ReadLine()).Returns(enteredId.ToString());
-            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
-            //Act
-            var id = manager.IdHandling();
-            //Assert
-            id.Should().Be(enteredId);
-            id.Should().BeOfType(typeof(int));
-        }
-        [Fact]
-        public void IdHandling_WithEnteredLetterN_Returns0()
-        {
-            //Arrange
-            string enteredString = "n";
-            var mockConsole = new Mock<IConsole>();
-            mockConsole.Setup(s => s.ReadLine()).Returns(enteredString);
-            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), new TagService(), mockConsole.Object);
-            //Act
-            var id = manager.IdHandling();
-            //Assert
-            id.Should().Be(0);
-            id.Should().BeOfType(typeof(int));
-        }
-        [Fact]
         public void RecipeDetailsView_WithProperListOfRecipesAndProperRecipeId_ReturnsRecipe()
         {
             //Arrange
             int id = 1;
-            var manager = new RecipeGettingManager(new MenuActionService(), new RecipeService(), new TagService(), new ConsoleWrapper());
+            var manager = new RecipeGettingManager(new RecipeService(), new ConsoleWrapper());
             //Act
             var returnedRecipe = manager.RecipeDetailsView(recipes, id);
             //Assert
-            returnedRecipe.Should().Be(recipes[id-1]);
+            returnedRecipe.Should().Be(recipes[id - 1]);
             returnedRecipe.Should().BeOfType(typeof(Recipe));
             returnedRecipe.Should().NotBeNull();
         }

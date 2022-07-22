@@ -13,7 +13,7 @@ namespace CookBook.App.Concrete
             Initialize();
         }
 
-        public List<MenuAction> GetMenuActionsByMenuName(string menuName)
+        public virtual List<MenuAction> GetMenuActionsByMenuName(string menuName)
         {
             List<MenuAction> result = new List<MenuAction>();
             foreach (var menuAction in Items)
@@ -36,6 +36,10 @@ namespace CookBook.App.Concrete
             AddItem(new MenuAction(6, "Tags", "Main"));
             AddItem(new MenuAction(7, "Edit recipe", "Main"));
             AddItem(new MenuAction(8, "All recipes", "Main"));
+            AddItem(new MenuAction(9, "Save recipe to file", "Main"));
+
+            AddItem(new MenuAction(1, "Save as Json", "SaveToFileMenu"));
+            AddItem(new MenuAction(2, "Save as Xml", "SaveToFileMenu"));
         }
     }
 }

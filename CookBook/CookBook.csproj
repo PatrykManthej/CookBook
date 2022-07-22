@@ -13,4 +13,8 @@
     <ProjectReference Include="..\CookBook.App\CookBook.App.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Xmls\" />
+  </ItemGroup>
+
 </Project>

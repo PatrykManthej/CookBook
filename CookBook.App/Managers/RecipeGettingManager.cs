@@ -2,8 +2,10 @@
 using CookBook.App.Concrete;
 using CookBook.Domain.Common;
 using CookBook.Domain.Entity;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -83,6 +85,7 @@ namespace CookBook.App.Managers
             var recipeId = IdHandling();
             return recipeId;
         }
+        
         public Recipe RecipeDetailsView(List<Recipe> recipes, int recipeId)
         {
             if(recipes is null)
@@ -128,7 +131,5 @@ namespace CookBook.App.Managers
             }
             Console.WriteLine();
         }
-
-
     }
 }
