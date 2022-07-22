@@ -13,7 +13,7 @@ namespace CookBook.App.Concrete
             Initialize();
         }
 
-        public List<MenuAction> GetMenuActionsByMenuName(string menuName)
+        public virtual List<MenuAction> GetMenuActionsByMenuName(string menuName)
         {
             List<MenuAction> result = new List<MenuAction>();
             foreach (var menuAction in Items)
